@@ -27,12 +27,35 @@ public class MainActivity extends AppCompatActivity {
         iv_image_icon.setImageResource(R.mipmap.aaaa);
 
         YHttp.initYHttp(this);
-
         YHttp.Builder builder = new YHttp.Builder();
         builder
                 .setParams("", "")
                 .setUrl("")
                 .setClass(UserInfo.class)
+                .setTag(MainActivity.class.toString())
+                .build()
+                .postRx(new OnResultListener<UserInfo>() {
+                    @Override
+                    public void onSuccess(UserInfo result) {
+
+                    }
+
+                    @Override
+                    public void onError(int code, String message) {
+
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+
+                    }
+                });
+
+        builder
+                .setParams("", "")
+                .setUrl("")
+                .setClass(UserInfo.class)
+                .setTag(MainActivity.class.toString())
                 .build()
                 .post(new OnResultListener<UserInfo>() {
                     @Override
@@ -48,5 +71,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        YHttp.getInstance().cancelRequest(MainActivity.class.toString());
+        YHttp.getInstance().cancelRequestTag(MainActivity.class.toString());
     }
 }

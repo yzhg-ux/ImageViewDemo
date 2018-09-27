@@ -17,16 +17,15 @@ public class LeftPeriod {
      * Retrofit生命周期的管理方法,内部封装了list集合
      */
 
-    private static Map<String, ListCompositeDisposable> disposableMap = new HashMap<>();
-
     private static ListCompositeDisposable listCompositeDisposable = new ListCompositeDisposable();
 
     /**
      * 网络请求生命周期管理
      */
     public static void addDisposable(Disposable disposable) {
-        if (disposable != null && !disposable.isDisposed())
+        if (disposable != null && !disposable.isDisposed()){
             listCompositeDisposable.add(disposable);
+        }
     }
 
     /**

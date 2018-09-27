@@ -22,6 +22,8 @@ public class HttpConstant {
     public static final long HTTP_CACHE_TIME = 1024 * 1024 * 100;
     //设置解析类型
     public static final int HTTP_BODY_TYPE = DataType.JSON_OBJECT;
+    //是否开启日志
+    public static final boolean HTTP_IS_OPEN_LOG = true;
 
 
 

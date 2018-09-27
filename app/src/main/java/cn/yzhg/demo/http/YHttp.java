@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -129,6 +130,13 @@ public class YHttp {
      * 描 述: 储存网络请求 用于RxJava方式请求网络
      */
     private static final Map<String, Observable> OBSERVABLE_MAP = new HashMap<>();
+
+    /*
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 管理RxJava生命周期
+     */
+    private static final List<RequestPairs> mRequestPool = new ArrayList<>();
     /**
      * 作 者: yzhg
      * 历 史: (版本) 1.0
@@ -214,7 +222,7 @@ public class YHttp {
     //https://www.jianshu.com/p/29c2a9ac5abf
     //https://www.jianshu.com/p/bd758f51742e
     //https://blog.csdn.net/j550341130/article/details/80540759
-    private static ListCompositeDisposable listCompositeDisposable = new ListCompositeDisposable();
+
 
     /**
      * 作 者: yzhg
@@ -228,7 +236,7 @@ public class YHttp {
                 .subscribe(new Observer<ResponseBody>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        listCompositeDisposable.add(d);
+                        putRequest(d);
                     }
 
                     @Override
@@ -239,16 +247,24 @@ public class YHttp {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        if (tag != null) {
+                            removeRequestTag(url);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         onResultListener.onFailure(e.getMessage());
+                        if (tag != null) {
+                            removeRequestTag(url);
+                        }
                     }
 
                     @Override
                     public void onComplete() {
-
+                        if (tag != null) {
+                            removeRequestTag(url);
+                        }
                     }
                 });
     }
@@ -341,6 +357,90 @@ public class YHttp {
         }
     }
 
+
+    /**
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 添加网络请求
+     */
+    private synchronized void putRequest(Disposable d) {
+        if (mRequestPool != null) {
+            mRequestPool.add(new RequestPairs(this.tag.toString() + this.url, d));
+        }
+    }
+
+    /**
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 取消单个网络请求
+     */
+    public void cancelRequestTag(Object tag) {
+        if (tag == null) return;
+        RequestPairs requestPairs = null;
+        try {
+            if (mRequestPool != null) {
+                //倒叙解除某个请求
+                for (int i = mRequestPool.size() - 1; i >= 0; i--) {
+                    requestPairs = mRequestPool.get(i);
+                    if (requestPairs.key.startsWith(tag.toString())) {
+                        Disposable disposable = requestPairs.value;   //找到此网络请求
+                        if (disposable != null && !disposable.isDisposed()) {
+                            disposable.dispose();
+                        }
+                        NetLoginUtils.i(tag.toString() + "---网络请求已经取消");
+                    } else {
+                        NetLoginUtils.i(tag.toString() + "---没有在网络池中找到该请求,或许已经结束");
+                    }
+                }
+                removeRequestTag(tag.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 取消多个网络请求
+     */
+    public void cancelRequestMoreTag(final String... mRequestTags) {
+        if (mRequestTags != null && mRequestTags.length > 0) {
+            for (String mRequestTag : mRequestTags) {
+                cancelRequestTag(mRequestTag);
+            }
+        }
+    }
+
+    /**
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 取消全部网络请求
+     */
+    public void cancelRequestAllTag() {
+        if (mRequestPool != null && mRequestPool.size() > 0) {
+            for (RequestPairs requestPairs : mRequestPool) {
+                cancelRequestTag(requestPairs);
+            }
+        }
+    }
+
+    /**
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 移除单个网络请求
+     */
+    private synchronized void removeRequestTag(String callKey) {
+        RequestPairs removeRequest = null;
+        synchronized (mRequestPool) {
+            for (RequestPairs requestPairs : mRequestPool) {
+                if (requestPairs.key.contains(callKey)) {
+                    removeRequest = requestPairs;
+                }
+            }
+            mRequestPool.remove(removeRequest);
+        }
+    }
 
     /**
      * 作 者: yzhg
