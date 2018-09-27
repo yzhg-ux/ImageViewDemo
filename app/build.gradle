@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
+    defaultConfig {
+        applicationId "cn.yzhg.demo"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation deps.support.app_compat
+    implementation deps.constraint_layout
+    testImplementation deps.support.junit
+    androidTestImplementation deps.support.runner
+    androidTestImplementation deps.support.espresso_core
+    implementation deps.retrofit.runtime
+    implementation deps.rxjava
+    implementation deps.rxAndroid
+    implementation deps.rxjava2_adapter
+    implementation deps.google_gson
+    implementation deps.rxrelay
+    implementation deps.retrofit.gson
+    implementation deps.retrofit.adapter
+    // implementation 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
+    implementation deps.rxlifecycle
+    implementation deps.glide
+    implementation deps.superTextView
+
+    implementation 'com.zhy:okhttputils:2.6.2'
+}
