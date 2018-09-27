@@ -127,13 +127,6 @@ public class YHttp {
     /*
      * 作 者: yzhg
      * 历 史: (版本) 1.0
-     * 描 述: 储存网络请求 用于RxJava方式请求网络
-     */
-    private static final Map<String, Observable> OBSERVABLE_MAP = new HashMap<>();
-
-    /*
-     * 作 者: yzhg
-     * 历 史: (版本) 1.0
      * 描 述: 管理RxJava生命周期
      */
     private static final List<RequestPairs> mRequestPool = new ArrayList<>();

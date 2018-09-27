@@ -31,11 +31,7 @@ dependencies {
     implementation deps.rxAndroid
     implementation deps.rxjava2_adapter
     implementation deps.google_gson
-    implementation deps.rxrelay
-    implementation deps.retrofit.gson
     implementation deps.retrofit.adapter
-    // implementation 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
-    implementation deps.rxlifecycle
     implementation deps.glide
     implementation deps.superTextView
 

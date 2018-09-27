@@ -25,6 +25,4 @@ public class HttpConstant {
     //是否开启日志
     public static final boolean HTTP_IS_OPEN_LOG = true;
 
-
-
 }

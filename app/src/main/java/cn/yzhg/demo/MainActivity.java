@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         ImageView iv_image_icon = (ImageView) findViewById(R.id.iv_image_icon);
 
         iv_image_icon.setImageResource(R.mipmap.aaaa);
