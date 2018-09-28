@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -192,8 +194,42 @@ public class YHttp {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(okHttpClient)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
         }
+    }
+
+    /**
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 普通的网络请求
+     */
+    public void get(final OnResultListener onResultListener) {
+        Builder builder = new Builder();
+        if (!this.params.isEmpty()) {
+            String value = getParams();
+            builder.setUrl(StringUtils.buffer(this.url, "?", value));
+            Call<ResponseBody> mCall = retrofit.create(ApiService.class).executeGet(this.url);
+            putRequest(mCall);  // 添加请求
+            request(mCall, onResultListener);
+        }
+    }
+
+    /**
+     * 作 者: yzhg
+     * 历 史: (版本) 1.0
+     * 描 述: 配置参数
+     */
+    private String getParams() {
+        String value = "";
+        for (Map.Entry<String, String> entry : this.params.entrySet()) {
+            String mapKey = entry.getKey();
+            String mapValue = entry.getValue();
+            String span = value.equals("") ? "" : "&";
+            String part = StringUtils.buffer(span, mapKey, "=", mapValue);
+            value = StringUtils.buffer(value, part);
+        }
+        return value;
     }
 
     /**
@@ -205,6 +241,16 @@ public class YHttp {
         Call<ResponseBody> mCall = retrofit.create(ApiService.class).executePost(this.url, this.params);
         putRequest(mCall);  // 添加请求
         request(mCall, onResultListener);
+    }
+
+    public void getRx(final OnResultListener onResultListener) {
+        Builder builder = new Builder();
+        if (params != null && params.size() > 0) {
+            String value = getParams();
+            builder.setUrl(StringUtils.buffer(this.url, "?", value));
+        }
+        Observable<ResponseBody> mObservable = retrofit.create(ApiService.class).executeGetRx(this.url);
+        request(mObservable, onResultListener);
     }
 
     public void postRx(final OnResultListener onResultListener) {

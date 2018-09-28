@@ -11,7 +11,7 @@ package cn.yzhg.demo.http;
 public class HttpConstant {
 
     //配置总连接
-    public static final String HTTP_BASE_URL = "";
+    public static final String HTTP_BASE_URL = "http://payjds.leyiou.com/";
     //读取超时时间
     public static final long HTTP_READ_TIME_OUT = 3000;
     //连接超时时间
